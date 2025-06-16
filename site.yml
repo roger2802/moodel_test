@@ -1,0 +1,14 @@
+- hosts: moodle_servers
+  become: true
+  vars:
+    postgres_root_password: "passwort"
+    db_name: moodledb
+    db_user: moodleuser
+    db_password: "passwort"
+    moodle_version: "5.0.1"
+    moodle_www_root: /var/www/moodle
+    moodle_data_dir: /var/moodledata
+  roles:
+    - database
+    - webserver
+    - moodle

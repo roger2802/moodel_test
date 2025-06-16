@@ -1,0 +1,18 @@
+<VirtualHost *:80>
+    ServerName {{ moodle_host }}
+    DocumentRoot {{ moodle_www_root }}
+
+    <Directory {{ moodle_www_root }}>
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/moodle_error.log
+    CustomLog ${APACHE_LOG_DIR}/moodle_access.log combined
+
+    <IfModule mod_expires.c>
+        ExpiresActive On
+        ExpiresByType text/css "access plus 1 week"
+        ExpiresByType application/javascript "access plus 1 week"
+    </IfModule>
+</VirtualHost>

@@ -1,0 +1,10 @@
+---
+- name: Configtest Apache
+  command: apache2ctl configtest
+  become: true
+
+- name: Reload Apache
+  service:
+    name: apache2
+    state: reloaded
+  become: true

@@ -1,0 +1,28 @@
+<?php
+unset($CFG);
+global $CFG;
+$CFG = new stdClass();
+$CFG->dbtype    = 'pgsql';
+$CFG->dblibrary = 'native';
+
+# zwinge TCP/MD5 statt Unix-Socket:
+$CFG->dbhost    = '127.0.0.1';
+$CFG->dbport    = '5432';
+
+$CFG->dbname    = '{{ db_name }}';
+$CFG->dbuser    = '{{ db_user }}';
+$CFG->dbpass    = '{{ db_password }}';
+$CFG->prefix    = 'mdl_';
+
+# PostgreSQL braucht keine dbsocket oder dbcollation hier:
+$CFG->dboptions = array (
+  'dbpersist'   => false,
+  'dbcollation' => '',
+);
+
+$CFG->wwwroot   = 'http://{{ moodle_host }}';
+$CFG->dataroot  = '{{ moodle_data_dir }}';
+$CFG->admin     = 'admin';
+$CFG->directorypermissions = 02777;
+
+require_once(__DIR__ . '/lib/setup.php');

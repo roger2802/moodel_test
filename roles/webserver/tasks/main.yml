@@ -1,0 +1,101 @@
+---
+# roles/webserver/tasks/main.yml
+
+- name: Entferne defekte php7.4.load-Symlink
+  file:
+    path: /etc/apache2/mods-enabled/php7.4.load
+    state: absent
+  become: true
+
+- name: Entferne defekte php7.4.conf-Symlink
+  file:
+    path: /etc/apache2/mods-enabled/php7.4.conf
+    state: absent
+  become: true
+
+- name: Entferne defekte php8.1.load-Symlink
+  file:
+    path: /etc/apache2/mods-enabled/php8.1.load
+    state: absent
+  become: true
+
+- name: Entferne defekte php8.1.conf-Symlink
+  file:
+    path: /etc/apache2/mods-enabled/php8.1.conf
+    state: absent
+  become: true
+
+- name: Aktiviere Apache-PHP8.2-Modul
+  community.general.apache2_module:
+    name: php8.2
+    state: present
+  notify: Reload Apache
+  become: true
+
+- name: Setze PHP max_input_vars für Moodle
+  ini_file:
+    path: /etc/php/8.2/apache2/conf.d/99-moodle.ini
+    section: PHP
+    option: max_input_vars
+    value: '5000'
+  notify: Reload Apache
+  become: true
+
+- name: Installiere Apache2
+  apt:
+    name: apache2
+    state: present
+    update_cache: yes
+  become: true
+
+- name: Aktiviere benötigte Apache-Module
+  community.general.apache2_module:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - rewrite
+    - headers
+    - expires
+    - ssl
+  notify: Reload Apache
+  become: true
+
+- name: Erstelle DocumentRoot für Moodle
+  file:
+    path: "{{ moodle_www_root }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  become: true
+
+- name: Deploy Moodle VirtualHost-Konfiguration
+  template:
+    src: vhost.conf.j2
+    dest: /etc/apache2/sites-available/moodle.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload Apache
+  become: true
+
+- name: Aktiviere Moodle-Site
+  command: a2ensite moodle.conf
+  args:
+    creates: /etc/apache2/sites-enabled/moodle.conf
+  notify: Reload Apache
+  become: true
+
+- name: Deaktiviere default Site
+  command: a2dissite 000-default.conf
+  args:
+    removes: /etc/apache2/sites-enabled/000-default.conf
+  notify: Reload Apache
+  become: true
+
+- name: Stelle sicher, dass Apache2 läuft
+  service:
+    name: apache2
+    state: started
+    enabled: yes
+  become: true

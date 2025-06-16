@@ -1,0 +1,3 @@
+# group_vars/all.yml
+mysql_root_password: "geheimesRootPasswort"
+moodle_host: "moodle.r0g.org"

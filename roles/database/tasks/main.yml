@@ -1,0 +1,71 @@
+# - name: Installiere PostgreSQL Server und Client
+#   apt:
+#     name:
+#       - postgresql
+#       - postgresql-contrib
+#     state: present
+#     update_cache: yes
+#   become: true
+
+# 1) Installiere PostgreSQL 14 anstelle von 12
+- name: Installiere PostgreSQL 14 Server und Client
+  apt:
+    name:
+      - postgresql-14
+      - postgresql-client-14
+      - postgresql-contrib
+    state: present
+  become: true
+
+- name: Installiere Python-PostgreSQL-Adapter
+  apt:
+    name: python3-psycopg2
+    state: present
+  become: true
+
+- name: Stelle sicher, dass PostgreSQL läuft
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+  become: true
+
+
+- name: PostgreSQL neu starten, damit HBA-Änderungen greifen
+  service:
+    name: postgresql
+    state: restarted
+    enabled: yes
+  become: true
+
+- name: Setze Passwort für postgres-Superuser
+  community.postgresql.postgresql_user:
+    name: postgres
+    password: "{{ postgres_root_password }}"
+    role_attr_flags: SUPERUSER
+    login_user: postgres
+    #login_host: 127.0.0.1
+    #login_password: "{{ postgres_root_password }}"
+  become: true
+  become_user: postgres
+
+- name: Erzeuge Moodle-DB-User
+  community.postgresql.postgresql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    state: present
+    login_user: postgres
+    login_host: 127.0.0.1
+    login_password: "{{ postgres_root_password }}"
+  become: true
+
+- name: Erzeuge Moodle-Datenbank
+  community.postgresql.postgresql_db:
+    name: "{{ db_name }}"
+    owner: "{{ db_user }}"
+    encoding: UTF8
+    state: present
+    login_user: postgres
+    login_host: 127.0.0.1
+    login_password: "{{ postgres_root_password }}"
+  become: true
