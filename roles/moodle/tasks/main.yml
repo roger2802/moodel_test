@@ -3,19 +3,16 @@
 
 # 1) PHP 8.1 PPA hinzufügen (für Ubuntu-Versionen ohne PHP8.1 im Main-Repo)
 - name: Füge Ondřej Surý PHP PPA hinzu
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: ppa:ondrej/php
     state: present
-  become: true
 
 - name: Aktualisiere apt-Cache
-  apt:
-    update_cache: yes
-  become: true
+  ansible.builtin.apt:
+    update_cache: true
 
-# 2) Installiere PHP 8.1 und benötigte Extensions
 - name: Installiere PHP 8.2 und Extensions für Moodle
-  apt:
+  ansible.builtin.apt:
     name:
       - php8.2
       - php8.2-cli
@@ -28,88 +25,78 @@
       - php8.2-intl
       - php8.2-pgsql
     state: present
-    update_cache: yes
-  become: true
+    update_cache: true
 
 - name: Erstelle Moodle Web-Verzeichnis
-  file:
+  ansible.builtin.file:
     path: "{{ moodle_www_root }}"
     state: directory
     owner: www-data
     group: www-data
     mode: '0755'
-  become: true
 
 - name: Installiere Git
-  apt:
+  ansible.builtin.apt:
     name: git
     state: present
-    update_cache: yes
-  become: true
+    update_cache: true
 
 - name: Mark Moodle webroot as safe Git directory
-  become: true
-  command: git config --global --add safe.directory {{ moodle_www_root }}
+  community.general.git_config:
+    name: safe.directory
+    scope: global
+    value: "{{ moodle_www_root }}"
 
 - name: Klone Moodle Repository
   ansible.builtin.git:
     repo: https://github.com/moodle/moodle.git
     dest: "{{ moodle_www_root }}"
     version: "MOODLE_500_STABLE"
-    update: yes
-    force: yes
-  become: true
+    update: true
+    force: true
 
 - name: Erstelle moodledata-Verzeichnis
-  file:
+  ansible.builtin.file:
     path: "{{ moodle_data_dir }}"
     state: directory
     owner: www-data
     group: www-data
     mode: '0770'
-  become: true
 
 - name: Setze Berechtigungen für Moodle Web-Verzeichnis
-  file:
+  ansible.builtin.file:
     path: "{{ moodle_www_root }}"
-    recurse: yes
+    recurse: true
     owner: www-data
     group: www-data
     mode: '0755'
-  become: true
 
 - name: Deploy Moodle config.php
-  template:
+  ansible.builtin.template:
     src: config.php.j2
     dest: "{{ moodle_www_root }}/config.php"
     owner: www-data
     group: www-data
     mode: '0644'
-  become: true
 
-# 8) Deaktiviere altes PHP-Modul und aktiviere PHP 8.2 im Apache
+# Deaktiviere altes PHP-Modul und aktiviere PHP 8.2 im Apache
 - name: Entferne defekte php8.1.load-Symlink
-  file:
+  ansible.builtin.file:
     path: /etc/apache2/mods-enabled/php8.1.load
     state: absent
-  become: true
 
 - name: Entferne defekte php8.1.conf-Symlink
-  file:
+  ansible.builtin.file:
     path: /etc/apache2/mods-enabled/php8.1.conf
     state: absent
-  become: true
 
 - name: Aktiviere Apache-PHP8.2-Modul
   community.general.apache2_module:
     name: php8.2
     state: present
   notify: Reload Apache
-  become: true
 
-# 9) Reload Apache nach allen Änderungen
 - name: Reload Apache for Moodle changes
-  service:
+  ansible.builtin.service:
     name: apache2
     state: reloaded
-  become: true

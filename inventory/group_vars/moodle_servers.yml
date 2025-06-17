@@ -1,0 +1,12 @@
+# group_vars/moodle_servers.yml
+
+moodle_host: "moodle.r0g.org"
+
+moodle_version: "5.0.1"
+moodle_www_root: /var/www/moodle
+moodle_data_dir: /var/moodledata
+
+postgres_root_password: "passwort"
+db_name: moodledb
+db_user: moodleuser
+db_password: "passwort"

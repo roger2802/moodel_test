@@ -1,0 +1,13 @@
+---
+- name: Configtest Apache
+  ansible.builtin.command:
+    cmd: apache2ctl configtest
+  register: apache_syntax
+  changed_when: false
+  failed_when: apache_syntax.rc != 0
+
+
+- name: Reload Apache
+  ansible.builtin.service:
+    name: apache2
+    state: reloaded

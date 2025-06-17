@@ -20,7 +20,39 @@ $CFG->dboptions = array (
   'dbcollation' => '',
 );
 
+// Redis-Session-Handler
+$CFG->session_handler_class = '\core\session\redis';
+$CFG->session_redis_host    = '127.0.0.1';
+$CFG->session_redis_port    = 6379;
+$CFG->session_redis_timeout = 2;        // Sekunden
+$CFG->session_redis_database = 0;       // Redis-DB-Nummer
+$CFG->session_redis_prefix  = 'moodle_sess_';
+
+// Redis als Haupt-Cache-Store
+$CFG->cachejs = true;  // JavaScript-Caches ebenfalls aktivieren
+$CFG->cachejsjuju = true;
+
+$CFG->redis_cache_host    = '127.0.0.1';
+$CFG->redis_cache_port    = 6379;
+$CFG->redis_cache_database = 1;
+$CFG->redis_cache_prefix  = 'moodle_cache_';
+
+$CFG->cachestore_redis_server = '127.0.0.1:6379';
+$CFG->cachestore_redis_prefix = 'moodle_cs_';
+$CFG->cachestore_redis_database = 2;
+$CFG->cachestore_redis_user = '';
+$CFG->cachestore_redis_pass = '';
+
+// Aktiviere Redis als Cache-Store
+$CFG->cache_store_instances = [
+    '\\core\\cache\\redis',
+];
+$CFG->cache_stores = [
+    'redis' => '\\core\\cache\\redis',
+];
+
 $CFG->wwwroot   = 'http://{{ moodle_host }}';
+$CFG->lang      = 'de';     // force German UI language
 $CFG->dataroot  = '{{ moodle_data_dir }}';
 $CFG->admin     = 'admin';
 $CFG->directorypermissions = 02777;
