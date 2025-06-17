@@ -20,15 +20,15 @@ Inventory Structure
 
 moodel_test/
 ├── inventory/
-│   └── hosts.ini          # defines [moodle_servers]
+│   └── hosts.ini               # defines [moodle_servers]
 ├── group_vars/
-│   └── moodle_servers.yml # vars for postgres_root_password, db_name, etc.
+│   └── moodle_servers.yml      # vars for postgres_root_password, db_name, etc.
 ├── roles/
-│   ├── postgres/          # PostgreSQL installation & configuration
-│   ├── apache/            # Apache, PHP, Redis setup
-│   └── moodle/            # Moodle code checkout & config
-├── site.yml               # main playbook
-├── requirements.yml       # Ansible Galaxy collections
+│   ├── postgres/               # PostgreSQL installation & configuration
+│   ├── apache/                 # Apache, PHP, Redis setup
+│   └── moodle/                 # Moodle code checkout & config
+├── site.yml                    # main playbook
+├── requirements.yml            # Ansible Galaxy collections
 └── README.md
 
 Configuration
