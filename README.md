@@ -18,11 +18,12 @@ Prerequisites
 
 Inventory Structure
 
+```text
 moodel_test/
 ├── inventory/
 │   └── hosts.ini               # defines [moodle_servers]
 ├── group_vars/
-│   └── moodle_servers.yml      # vars for postgres_root_password, db_name, etc.
+│   └── moodle_servers.yml      # vars für postgres_root_password, db_name, etc.
 ├── roles/
 │   ├── postgres/               # PostgreSQL installation & configuration
 │   ├── apache/                 # Apache, PHP, Redis setup
@@ -30,6 +31,7 @@ moodel_test/
 ├── site.yml                    # main playbook
 ├── requirements.yml            # Ansible Galaxy collections
 └── README.md
+```
 
 Configuration
 	•	group_vars/moodle_servers.yml: contains variables such as:
