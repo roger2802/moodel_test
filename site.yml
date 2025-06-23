@@ -3,6 +3,9 @@
   become: true
 
   roles:
+    - role: iptables
+      tags:
+        - iptables
     - role: postgres
       tags:
         - postgres

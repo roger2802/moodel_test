@@ -1,0 +1,45 @@
+# roles/iptables/tasks/main.yml
+---
+- name: Paket-Tools für iptables installieren (Debian)
+  ansible.builtin.package:
+    name: iptables-persistent
+    state: present
+  when: ansible_facts.os_family == 'Debian'
+
+- name: Paket-Tools für iptables installieren (RHEL)
+  ansible.builtin.package:
+    name: iptables-services
+    state: present
+  when: ansible_facts.os_family == 'RedHat'
+
+# roles/iptables/tasks/main.yml
+
+- name: Flush all existing iptables rules
+  ansible.builtin.iptables:
+    table: filter
+    flush: true
+  notify: Save iptables
+
+- name: Set default policies
+  ansible.builtin.iptables:
+    table: filter
+    chain: "{{ item.chain }}"
+    policy: "{{ item.policy }}"
+  loop: "{{ iptables_default_policy }}"
+  notify: Save iptables
+
+- name: Allow defined ports
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: "{{ item.proto }}"
+    destination_port: "{{ item.port }}"
+    jump: ACCEPT
+  loop: "{{ iptables_allowed_ports }}"
+  notify: Save iptables
+
+- name: Allow RELATED/ESTABLISHED
+  ansible.builtin.iptables:
+    chain: INPUT
+    ctstate: RELATED,ESTABLISHED
+    jump: ACCEPT
+  notify: Save iptables

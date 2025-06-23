@@ -1,0 +1,8 @@
+# roles/iptables/handlers/main.yml
+---
+- name: Save iptables
+  community.general.iptables_state:
+    state: saved
+    path: >-
+      {{ '/etc/iptables/rules.v4' if ansible_facts.os_family == 'Debian'
+         else '/etc/sysconfig/iptables' }}

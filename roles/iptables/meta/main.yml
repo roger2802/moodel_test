@@ -1,0 +1,8 @@
+# roles/iptables/meta/main.yml
+---
+# Role-Abhängigkeiten (andere Rollen)
+dependencies: []
+
+# Collection-Abhängigkeiten (externe Collections für Module)
+collections:
+  - community.general

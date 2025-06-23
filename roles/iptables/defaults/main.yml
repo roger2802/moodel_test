@@ -1,0 +1,13 @@
+# roles/iptables/defaults/main.yml
+---
+# Liste der zu öffnenden Ports mit Protokoll
+iptables_allowed_ports:
+  - { port: 22, proto: tcp }   # SSH
+  - { port: 80, proto: tcp }   # HTTP
+  - { port: 443, proto: tcp }   # HTTPS
+
+# Default-Policies für die Filter-Tabelle
+iptables_default_policy:
+  - { chain: INPUT, policy: DROP }
+  - { chain: FORWARD, policy: DROP }
+  - { chain: OUTPUT, policy: ACCEPT }
