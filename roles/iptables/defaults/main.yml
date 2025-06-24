@@ -5,7 +5,8 @@ iptables_allowed_ports:
   - { port: 22, proto: tcp }   # SSH
   - { port: 80, proto: tcp }   # HTTP
   - { port: 443, proto: tcp }   # HTTPS
-
+  - { port: 5432, proto: tcp } # PostgreSQL
+  - { port: 6379, proto: tcp } # Redis
 # Default-Policies für die Filter-Tabelle
 iptables_default_policy:
   - { chain: INPUT, policy: DROP }

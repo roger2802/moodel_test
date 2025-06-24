@@ -1,0 +1,31 @@
+- name: Erlaube RELATED/ESTABLISHED Verbindungen (hält SSH am Leben)
+  ansible.builtin.iptables:
+    chain: INPUT
+    ctstate: "RELATED,ESTABLISHED"
+    jump: ACCEPT
+  tags: iptables
+
+- name: Erlaube SSH (Port 22)
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: 22
+    jump: ACCEPT
+  tags: iptables
+
+- name: Erlaube alle ausgehenden Verbindungen
+  ansible.builtin.iptables:
+    chain: OUTPUT
+    jump: ACCEPT
+  tags: iptables
+  notify: Save iptables
+
+- name: Setze valide DNS-Resolver in /etc/resolv.conf
+  ansible.builtin.copy:
+    dest: /etc/resolv.conf
+    content: |
+      nameserver 8.8.8.8
+      nameserver 1.1.1.1
+    owner: root
+    group: root
+    mode: '0644'

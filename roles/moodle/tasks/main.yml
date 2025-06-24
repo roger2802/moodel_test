@@ -2,14 +2,14 @@
 # roles/moodle/tasks/main.yml
 
 # 1) PHP 8.1 PPA hinzufügen (für Ubuntu-Versionen ohne PHP8.1 im Main-Repo)
-- name: Füge Ondřej Surý PHP PPA hinzu
-  ansible.builtin.apt_repository:
-    repo: ppa:ondrej/php
-    state: present
+# - name: Füge Ondřej Surý PHP PPA hinzu
+#   ansible.builtin.apt_repository:
+#     repo: ppa:ondrej/php
+#     state: present
 
 - name: Aktualisiere apt-Cache
   ansible.builtin.apt:
-    update_cache: true
+    # update_cache: true
 
 - name: Installiere PHP 8.2 und Extensions für Moodle
   ansible.builtin.apt:
@@ -25,7 +25,7 @@
       - php8.2-intl
       - php8.2-pgsql
     state: present
-    update_cache: true
+    # update_cache: true
 
 - name: Erstelle Moodle Web-Verzeichnis
   ansible.builtin.file:
@@ -39,7 +39,7 @@
   ansible.builtin.apt:
     name: git
     state: present
-    update_cache: true
+    # update_cache: true
 
 - name: Mark Moodle webroot as safe Git directory
   community.general.git_config:

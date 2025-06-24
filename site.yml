@@ -1,7 +1,11 @@
 - name: Provisioniere Moodle-Server (DB, Webserver & Moodle)
   hosts: moodle_servers
   become: true
-
+  pre_tasks:
+    - name: Importiere iptables Pre-Tasks
+      ansible.builtin.import_tasks: playbooks/pre_tasks/iptables.yml
+      tags:
+        - iptables
   roles:
     - role: iptables
       tags:

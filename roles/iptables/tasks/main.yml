@@ -1,45 +1,43 @@
-# roles/iptables/tasks/main.yml
 ---
-- name: Paket-Tools für iptables installieren (Debian)
-  ansible.builtin.package:
-    name: iptables-persistent
-    state: present
-  when: ansible_facts.os_family == 'Debian'
-
-- name: Paket-Tools für iptables installieren (RHEL)
-  ansible.builtin.package:
-    name: iptables-services
-    state: present
-  when: ansible_facts.os_family == 'RedHat'
-
-# roles/iptables/tasks/main.yml
-
-- name: Flush all existing iptables rules
-  ansible.builtin.iptables:
-    table: filter
-    flush: true
-  notify: Save iptables
-
-- name: Set default policies
+- name: Setze Standard-Policies für iptables
   ansible.builtin.iptables:
     table: filter
     chain: "{{ item.chain }}"
     policy: "{{ item.policy }}"
   loop: "{{ iptables_default_policy }}"
+  tags: iptables
   notify: Save iptables
 
-- name: Allow defined ports
+- name: Erlaube definierte Ports
   ansible.builtin.iptables:
     chain: INPUT
     protocol: "{{ item.proto }}"
     destination_port: "{{ item.port }}"
     jump: ACCEPT
   loop: "{{ iptables_allowed_ports }}"
+  tags: iptables
   notify: Save iptables
 
-- name: Allow RELATED/ESTABLISHED
+- name: Erlaube alle ausgehenden Verbindungen
+  ansible.builtin.iptables:
+    chain: OUTPUT
+    jump: ACCEPT
+  tags: iptables
+  notify: Save iptables
+
+- name: Pre-Task Erlaube SSH und bereits etablierte Verbindungen
   ansible.builtin.iptables:
     chain: INPUT
-    ctstate: RELATED,ESTABLISHED
+    ctstate: "RELATED,ESTABLISHED"
     jump: ACCEPT
+  tags: iptables
+  notify: Save iptables
+
+- name: Erlaube SSH
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: 22
+    jump: ACCEPT
+  tags: iptables
   notify: Save iptables

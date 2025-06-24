@@ -43,13 +43,22 @@
     name:
       - redis-server
       - php8.2-redis
+      - php8.2-soap
     state: present
-    update_cache: true
+    # update_cache: true
 
 - name: Aktiviere PHP-Redis-Extension
   ansible.builtin.command:
     cmd: phpenmod redis
     creates: /etc/php/8.2/mods-enabled/redis.ini
+  notify: Reload Apache
+  become: true
+
+
+- name: Aktiviere PHP SOAP-Extension
+  ansible.builtin.command:
+    cmd: phpenmod soap
+    creates: /etc/php/8.2/mods-enabled/soap.ini
   notify: Reload Apache
   become: true
 
@@ -63,7 +72,7 @@
   ansible.builtin.apt:
     name: apache2
     state: present
-    update_cache: true
+    # update_cache: true
 
 - name: Aktiviere benötigte Apache-Module
   community.general.apache2_module:
@@ -112,3 +121,10 @@
     name: apache2
     state: started
     enabled: true
+
+- name: Ensure Moodle cron runs every minute
+  ansible.builtin.cron:
+    name: "Moodle cron"
+    user: www-data
+    minute: "*/1"
+    job: "/usr/bin/php {{ moodle_www_root | default('/var/www/moodle') }}/admin/cli/cron.php > /dev/null 2>&1"
